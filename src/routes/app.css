@@ -1,0 +1,30 @@
+.content {
+	text-align: center;
+	border: 1px solid black;
+}
+
+.row {
+	display: grid;
+	justify-content: center;
+	justify-items: center;
+	text-align: center;
+
+	grid-template-columns: 50% 50%;
+	@media screen and (min-width: 500px) {
+		grid-template-columns: 30% 30%;
+	}
+	@media screen and (min-width: 750px) {
+		grid-template-columns: 20% 20%;
+	}
+	@media screen and (min-width: 1200px) {
+		grid-template-columns: 15% 15% 15% 15%;
+	}
+}
+
+.success {
+	color: green;
+}
+
+.error {
+	color: red;
+}
