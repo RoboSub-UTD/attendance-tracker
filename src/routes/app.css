@@ -1,6 +1,13 @@
+body {
+	background-color: #e6e9ef;
+	color: #4c4f69;
+}
+
 .content {
+	background-color: #eff1f5;
+
 	text-align: center;
-	border: 1px solid black;
+	border: 1px solid #9ca0b0;
 }
 
 .row {
