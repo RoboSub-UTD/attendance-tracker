@@ -16,19 +16,16 @@
 			this might break if the reader cant get all 3 strips but idk
 			*/
 			let cometCardID = cometCardIDInput.value;
-			cometCardID = cometCardID.substring(0, 18);
 
-			/*
-			if the characters to the left and right are not ';' and '=' respectively, something has gone
-			wrong and we should try again. This happens sometimes if the card does not get read correctly
-			*/
-			if (!cometCardID.startsWith(';') && !cometCardID.endsWith('=')) {
+			const i0 = cometCardID.indexOf(';');
+			const i1 = cometCardID.indexOf('=');
+			if (i0 === -1 || i1 === -1 || i0 > i1) {
 				cometCardIDInput.value = '';
 				return;
 			}
 
 			// remove the ';' and '=' from the cometCardID and just get the numbers
-			cometCardID = cometCardID.substring(1, 17);
+			cometCardID = cometCardID.substring(cometCardID.indexOf(';')+1, cometCardID.indexOf('='));
 
 			// try to log in
 			let response = await fetch('api/login', {
