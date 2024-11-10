@@ -1,8 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	let cometCardIDInput: HTMLInputElement;
 	let success: HTMLElement;
+
+	onMount(() => {
+		cometCardIDInput.focus();
+	});
 </script>
 
 <div class="content">
@@ -21,6 +26,7 @@
 			const i1 = cometCardID.indexOf('=');
 			if (i0 === -1 || i1 === -1 || i0 > i1) {
 				cometCardIDInput.value = '';
+				setTimeout(() => { cometCardIDInput.focus(); }, 500);
 				return;
 			}
 
@@ -46,6 +52,7 @@
 				setTimeout(() => {
 					success.innerText = '';
 				}, 3000);
+				cometCardIDInput.focus();
 			}
 		}}
 	>
