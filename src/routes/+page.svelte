@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
-	let netIDInput: HTMLInputElement;
+	let cometCardIDInput: HTMLInputElement;
 	let success: HTMLElement;
-	let error: HTMLElement;
+
+	onMount(() => {
+		cometCardIDInput.focus();
+	});
 </script>
 
 <div class="content">
@@ -11,33 +15,51 @@
 	<br />
 	<form
 		on:submit={async () => {
+			/*
+			get just the serial number and characters to the left and right from the card swipe
+			e.g., ;0123456789012345=
+			this might break if the reader cant get all 3 strips but idk
+			*/
+			let cometCardID = cometCardIDInput.value;
+
+			const i0 = cometCardID.indexOf(';');
+			const i1 = cometCardID.indexOf('=');
+			if (i0 === -1 || i1 === -1 || i0 > i1) {
+				cometCardIDInput.value = '';
+				setTimeout(() => { cometCardIDInput.focus(); }, 500);
+				return;
+			}
+
+			// remove the ';' and '=' from the cometCardID and just get the numbers
+			cometCardID = cometCardID.substring(cometCardID.indexOf(';')+1, cometCardID.indexOf('='));
+
+			// try to log in
 			let response = await fetch('api/login', {
 				method: 'POST',
 				body: JSON.stringify({
-					netID: netIDInput.value
+					cometCardID
 				})
 			});
 
 			if (!response.ok) {
-				localStorage.setItem('netID', netIDInput.value);
+				// if logging in fails, save the cometCardID for later and redirect to the /register page
+				localStorage.setItem('cometCardID', cometCardID);
 				await goto('/register');
+			} else {
+				// if logging in succeeds, clear the cometCardIDInput value and give the success message
+				cometCardIDInput.value = '';
+				success.innerText = 'Successfully counted attendance!';
+				setTimeout(() => {
+					success.innerText = '';
+				}, 3000);
+				cometCardIDInput.focus();
 			}
-
-			netIDInput.value = '';
-
-			success.innerText = 'Successfully counted attendance! You may exit this page.';
-			success.hidden = false;
 		}}
 	>
-		<label for="netID">NetID:</label>
+		<label for="netID">Swipe!</label>
 		<br />
-		<input id="netID" type="text" value="" bind:this={netIDInput} />
-		<br /><br />
-		<button id="submit">Submit</button>
-		<br /><br />
-		<sub>Not registered? <a href="/register">click here to do that!</a></sub>
+		<input id="cometCardID" type="text" value="" bind:this={cometCardIDInput} />
 	</form>
-	<p id="success" class="success" hidden bind:this={success}></p>
-	<p id="error" class="error" hidden bind:this={error}></p>
+	<p id="success" class="success" bind:this={success}></p>
 	<br />
 </div>

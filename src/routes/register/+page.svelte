@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	let netIDInput: HTMLInputElement;
 	let nameInput: HTMLInputElement;
 
+	// TODO: find a better way to handle all the different projects because omg
 	let hydromedaProgramming: HTMLInputElement;
 	let hydromedaMechanical: HTMLInputElement;
 	let hydromedaElectrical: HTMLInputElement;
@@ -21,13 +22,16 @@
 	let miniFloatMechanical: HTMLInputElement;
 	let miniFloatElectrical: HTMLInputElement;
 
-	let success: HTMLElement;
-	let error: HTMLElement;
-
-	let netID: string;
+	let cometCardID: string;
 	onMount(() => {
-		netID = localStorage.getItem('netID') || '';
-		localStorage.removeItem('netID');
+		// get the cometCardID from localStorage
+		const _cometCardID = localStorage.getItem('cometCardID');
+		if (_cometCardID) {
+			cometCardID = _cometCardID;
+		} else {
+			// go back to the main page if it doesn't exist
+			goto('/');
+		}
 	});
 </script>
 
@@ -36,9 +40,11 @@
 	<br />
 	<form
 		on:submit={async () => {
-			let response = await fetch('api/register', {
+			// on submit, try to register the member
+			await fetch('api/register', {
 				method: 'POST',
 				body: JSON.stringify({
+					cometCardID,
 					netID: netIDInput.value,
 					name: nameInput.value,
 					projects: {
@@ -61,17 +67,13 @@
 				})
 			});
 
-			if (response.ok) {
-				success.innerText = 'Registered and attendance counted! you may exit this page.';
-				success.hidden = false;
-			} else {
-				error.innerText = 'Failed to register :( Try refreshing?';
-				error.hidden = false;
-			}
+			// regardless of if it worked or not, remove cometCardID from localstorage and go back to the main page
+			localStorage.removeItem("cometCardID");
+			await goto('/');
 		}}
 	>
 		<label for="netID">NetID: </label>
-		<input id="netID" type="text" bind:value={netID} bind:this={netIDInput} />
+		<input id="netID" type="text" bind:this={netIDInput} />
 		<br /><br />
 		<label for="name">Name: </label>
 		<input id="name" type="text" value="" bind:this={nameInput} />
@@ -126,7 +128,5 @@
 		<br /><br />
 		<button id="submit">Submit</button>
 	</form>
-	<p id="success" class="success" hidden bind:this={success}></p>
-	<p id="error" class="error" hidden bind:this={error}></p>
 	<br />
 </div>

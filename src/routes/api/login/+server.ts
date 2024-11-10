@@ -6,20 +6,22 @@ import { json } from '@sveltejs/kit';
 export async function POST({ request }) {
 	const data = await request.json();
 
-	const memberData = (await db.select().from(members).where(eq(members.netID, data.netID)))[0];
+	// get all the member data for a given cometCardID
+	const memberData = (
+		await db.select().from(members).where(eq(members.cometCardID, data.cometCardID))
+	)[0];
 
 	if (memberData) {
+		// if the member data exists, increase their attendance count by 1
 		await db
 			.update(members)
 			.set({ attendance: (memberData.attendance || 0) + 1 })
-			.where(eq(members.netID, data.netID));
+			.where(eq(members.cometCardID, data.cometCardID));
 
-		console.log(`Successfully counted attendance for ${memberData.name} (${memberData.netID})`);
+		// OK!
 		return json(null, { status: 200 });
 	} else {
-		console.log(
-			`Failed to count attendance for netID ${data.netID}. Redirecting to registration page`
-		);
-		return json(null, { status: 303 });
+		// not OK ;(
+		return json(null, { status: 400 });
 	}
 }
