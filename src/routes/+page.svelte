@@ -8,6 +8,12 @@
 	onMount(() => {
 		cometCardIDInput.focus();
 	});
+
+	function resetInput() {
+		cometCardIDInput.value = '';
+		setTimeout(() => { cometCardIDInput.focus(); }, 500);
+		return;
+	}
 </script>
 
 <div class="content">
@@ -25,13 +31,17 @@
 			const i0 = cometCardID.indexOf(';');
 			const i1 = cometCardID.indexOf('=');
 			if (i0 === -1 || i1 === -1 || i0 > i1) {
-				cometCardIDInput.value = '';
-				setTimeout(() => { cometCardIDInput.focus(); }, 500);
+				resetInput();
 				return;
 			}
 
 			// remove the ';' and '=' from the cometCardID and just get the numbers
 			cometCardID = cometCardID.substring(cometCardID.indexOf(';')+1, cometCardID.indexOf('='));
+
+			// the resulting number should be 16 digits long
+			if (cometCardID.length !== 16) {
+				resetInput();
+			}
 
 			// try to log in
 			let response = await fetch('api/login', {
