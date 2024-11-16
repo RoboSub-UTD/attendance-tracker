@@ -4,6 +4,7 @@
 
 	let cometCardIDInput: HTMLInputElement;
 	let success: HTMLElement;
+	let fail: HTMLElement;
 
 	onMount(() => {
 		cometCardIDInput.focus();
@@ -51,18 +52,25 @@
 				})
 			});
 
-			if (!response.ok) {
+			if (response.status === 400) {
 				// if logging in fails, save the cometCardID for later and redirect to the /register page
 				localStorage.setItem('cometCardID', cometCardID);
 				await goto('/register');
-			} else {
+			}
+			else if (response.status === 403) {
+				resetInput();
+				fail.innerText = "You've already been counted present >:(";
+				setTimeout(() => {
+					fail.innerText = '';
+				}, 3000);
+			}
+			else {
 				// if logging in succeeds, clear the cometCardIDInput value and give the success message
-				cometCardIDInput.value = '';
+				resetInput();
 				success.innerText = 'Successfully counted attendance!';
 				setTimeout(() => {
 					success.innerText = '';
 				}, 3000);
-				cometCardIDInput.focus();
 			}
 		}}
 	>
@@ -71,5 +79,6 @@
 		<input id="cometCardID" type="text" value="" bind:this={cometCardIDInput} />
 	</form>
 	<p id="success" class="success" bind:this={success}></p>
+	<p id="fail" class="error" bind:this={fail}></p>
 	<br />
 </div>

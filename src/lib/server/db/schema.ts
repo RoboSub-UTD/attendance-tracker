@@ -4,7 +4,8 @@ export const members = sqliteTable('members', {
 	cometCardID: text('comet_card_id').primaryKey(),
 	netID: text('net_id'),
 	name: text('name'),
-	attendance: integer('attendance')
+	attendanceCount: integer('attendance').default(0),
+	attendanceTimestamps: text('attendance_timestamps').default('[]'),
 });
 
 export const projects = sqliteTable('projects', {

@@ -23,7 +23,6 @@ export async function POST({ request }) {
 			cometCardID: data.cometCardID,
 			netID: data.netID,
 			name: data.name,
-			attendance: 0
 		});
 
 		// for every project
