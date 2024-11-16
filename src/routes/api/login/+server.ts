@@ -15,9 +15,7 @@ export async function POST({ request }) {
 		const attendanceTimestamps: number[] = JSON.parse(memberData.attendanceTimestamps!);
 		const now = Date.now();
 
-		console.log(attendanceTimestamps[attendanceTimestamps.length - 1]);
-		console.log(now - (2 * 60 * 60 *1000));
-		if (attendanceTimestamps[attendanceTimestamps.length - 1] >= now - (2 * 60 * 60 * 1000)) {
+		if (attendanceTimestamps[attendanceTimestamps.length - 1] as number >= now - (2 * 60 * 60 * 1000)) {
 			return json(null, { status: 403 });
 		}
 
